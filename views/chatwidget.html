@@ -1,0 +1,107 @@
+<script id="Microsoft_Omnichannel_LCWidget" src="https://oc-cdn-ocprod.azureedge.net/livechatwidget/scripts/LiveChatBootstrapper.js" data-app-id="7216ae4d-b1e5-4085-b0fc-78c0d7688ccf" data-lcw-version="prod" data-org-id="dfedbedc-a5e5-4a31-9d41-477e30b29694" data-org-url="https://m-dfedbedc-a5e5-4a31-9d41-477e30b29694.us.omnichannelengagementhub.com"></script>
+
+<script>
+    var auth ={};
+    auth.getAuthenticationToken = function(callback){
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                callback(xhttp.responseText);
+            }
+        };
+        xhttp.onerror = function(error) {
+            callback(null);
+        };
+        //Replace this with a call to your token generating service
+        xhttp.open("GET", "https://copilot-d365-gqh5b8fwfnepdbdv.westus-01.azurewebsites.net/privatekey", true);
+        xhttp.send();
+    }
+</script>
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>AIA One</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body>
+        <div class="flex justify-center">
+            <div class="container">
+                <div class="py-14">
+                    <h1 class="text-3xl font-semibold">AIA One</h1>
+                    <p>Report Date:  <!-- @report_date --></p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-5 print:grid-cols-6">
+                    <div class="mt-2.5">
+                        <div class="text-center border border-solid border-gray-300 bg-gray-100 rounded-t-lg font-medium h-12 flex justify-center items-center">
+                            Critical
+                        </div>
+                        <div class="text-center border border-solid border-gray-300 rounded-b-lg font-medium h-20 flex justify-center items-center text-3xl border-t-0">
+                            <!-- @critical_vulnerability_count -->
+                        </div>
+                    </div>
+                    <div class="mt-2.5">
+                        <div class="text-center border border-solid border-gray-300 bg-gray-100 rounded-t-lg font-medium h-12 flex justify-center items-center">
+                            High
+                        </div>
+                        <div class="text-center border border-solid border-gray-300 rounded-b-lg font-medium h-20 flex justify-center items-center text-3xl border-t-0">
+                            <!-- @high_vulnerability_count -->
+                        </div>
+                    </div>
+                    <div class="mt-2.5">
+                        <div class="text-center border border-solid border-gray-300 bg-gray-100 rounded-t-lg font-medium h-12 flex justify-center items-center">
+                            Medium
+                        </div>
+                        <div class="text-center border border-solid border-gray-300 rounded-b-lg font-medium h-20 flex justify-center items-center text-3xl border-t-0">
+                            <!-- @medium_vulnerability_count -->
+                        </div>
+                    </div>
+                    <div class="mt-2.5">
+                        <div class="text-center border border-solid border-gray-300 bg-gray-100 rounded-t-lg font-medium h-12 flex justify-center items-center">
+                            Low
+                        </div>
+                        <div class="text-center border border-solid border-gray-300 rounded-b-lg font-medium h-20 flex justify-center items-center text-3xl border-t-0">
+                            <!-- @low_vulnerability_count -->
+                        </div>
+                    </div>
+                    <div class="mt-2.5">
+                        <div class="text-center border border-solid border-gray-300 bg-gray-100 rounded-t-lg font-medium h-12 flex justify-center items-center">
+                            Info
+                        </div>
+                        <div class="text-center border border-solid border-gray-300 rounded-b-lg font-medium h-20 flex justify-center items-center text-3xl border-t-0">
+                            <!-- @info_vulnerability_count -->
+                        </div>
+                    </div>
+                    <div class="mt-2.5">
+                        <div class="text-center border border-solid border-gray-300 bg-gray-100 rounded-t-lg font-medium h-12 flex justify-center items-center">
+                            Unknown
+                        </div>
+                        <div class="text-center border border-solid border-gray-300 rounded-b-lg font-medium h-20 flex justify-center items-center text-3xl border-t-0">
+                            <!-- @unknown_vulnerability_count -->
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-14 overflow-x-auto">
+                    <table class="table-fixed w-full">
+                        <thead class="font-semibold text-left border-b-2 border-solid border-gray-300">
+                            <tr>
+                                <th class="p-2">Policies</th>
+                                <th class="p-2">Agents</th>
+                                <th class="p-2 w-6/12">Description</th>
+                                <th class="p-2">Identifier</th>
+                                <th class="p-2">Tool</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm divide-y divide-gray-300">
+                            <!-- row -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+
+
