@@ -15,7 +15,10 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, '/views/chatwidget.html'));
 });
 
-
+app.get("/signout", (req, res) => {
+    //res.send("Hello, World");
+    res.sendFile(path.join(__dirname, '/views/signout.html'));
+});
 
 app.listen(process.env.PORT || 5000, () => {
     console.log("Server is running on port " + (process.env.PORT || 5000));
