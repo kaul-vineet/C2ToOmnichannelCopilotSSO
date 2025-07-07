@@ -97,21 +97,6 @@
         let oktaSignIn;
         let oktaToken;
         var auth = {};
-
-        auth.getAuthenticationToken = function(callback) {
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    callback(xhttp.responseText);
-                }
-            };
-            xhttp.onerror = function(error) {
-                callback(null);
-            };
-            //Replace this with a call to your token generating service
-            xhttp.open("GET", "https://copilot-d365-gqh5b8fwfnepdbdv.westus-01.azurewebsites.net/privatekey", true);
-            xhttp.send();
-        };
             
         // Sign out and redirect to sign out page
         function signOut() {
@@ -224,12 +209,33 @@
         } catch (error) {
             // Handle error if needed
         }
-            // If the authentication fails, show the sign-in card
-            console.error("Authentication failed:", error);
+        // If the authentication fails, show the sign-in card
+        console.error("Authentication failed:", error);
 
         callback({ show: true });  // Show sign-in card by default
     });
     });
+
+    auth.getAuthenticationToken = function(callback) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                callback(xhttp.responseText);
+            }
+        };
+        xhttp.onerror = function(error) {
+            callback(null);
+        };
+        //Replace this with a call to your token generating service
+        xhttp.open("GET", "https://copilot-d365-gqh5b8fwfnepdbdv.westus-01.azurewebsites.net/privatekey", true);
+        console.log("Sending token to: " + oktaToken);
+        xhttp.setRequestHeader("Authorization", "Bearer " + oktaToken);
+        xhttp.send();
+
+        //Replace this with a call to your token generating service
+        //xhttp.open("GET", "https://copilot-d365-gqh5b8fwfnepdbdv.westus-01.azurewebsites.net/privatekey", true);
+        //xhttp.send();
+    };
 
     async function renderChatWidget() {
         document.getElementById('chat-container').style.visibility = 'visible';
