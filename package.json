@@ -13,6 +13,8 @@
   "author": "Vineet Kaul",
   "license": "MIT",
   "dependencies": {
+    "@azure/identity": "^4.10.2",
+    "@azure/keyvault-keys": "^4.10.0",
     "dotenv": "^16.4.5",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",

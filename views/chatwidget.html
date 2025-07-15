@@ -96,6 +96,8 @@
     <script>
         let oktaSignIn;
         let oktaToken;
+        let botTokenUrl = "https://4107ffcb4d1ce0adb962846b6eb233.0f.environment.api.powerplatform.com/powervirtualagents/botsbyschema/cr097_vineetKaulAgent/directline/token?api-version=2022-03-01-preview"
+        let signInIds = []; // Array to track authenticated sign-in cards
         var auth = {};
             
         // Sign out and redirect to sign out page
@@ -106,15 +108,19 @@
             });
         }
 
-        async function fetchJSON(url, options = {}) {
-            const res = await fetch(url, {
-                ...options,
-                headers: {
-                    ...options.headers,
-                    accept: 'application/json'
-                }
-            });
+        window.addEventListener("lcw:onMessageReceived", function handleWidgetMessageReceivedEvent(payload){ // Handle the live chat widget message sent event
+            console.log("Message received from the live chat widget:", JSON.stringify(payload));
+            //console.log("Message received from the live chat widget:", JSON.stringify(payload).detail.attachment[0].contentType);
+            
+        });
+
+        window.addEventListener("lcw:onMaximize", function handleWidgetMaximizeEvent(){ // Handle the live chat widget maximize event
+            console.log("Widget maximized");
+            if (oktaToken === undefined) {
+                console.log("Okta token is not defined.");
+                //Microsoft.Omnichannel.LiveChatWidget.SDK.closeChat();
         }
+        });
 
         window.addEventListener("lcw:ready", function signOkta() {
             oktaSignIn = new OktaSignIn({
@@ -150,73 +156,65 @@
                     console.log('error logging in', err);
                 });
             });
+
         });
-        
+
         window.addEventListener("lcw:ready", function signInOmnichannel() {
-        console.log("Starting message received");
-        const signInIds = [];
-        botTokenUrl = "https://4107ffcb4d1ce0adb962846b6eb233.0f.environment.api.powerplatform.com/powervirtualagents/botsbyschema/cr097_vineetKaulAgent/directline/token?api-version=2022-03-01-preview"
-        //botTokenUrl = "https://token.botframework.com/api/sas/postToken?expiry=1751643205&id=key2&state=e2a727b4a7664ca39e4027bb13e38532&hmac=ZLlfuYHgFm1nneIgpmuv4FJwuJmWsNC4ZWhIVuE7apw%3d"
-        
-        window.Microsoft.Omnichannel.LiveChatWidget.SDK.setBotAuthTokenProvider(async (botTokenUrl, callback) => {
-        const urlSearchParams = new URLSearchParams(botTokenUrl);
-        const signInId = urlSearchParams.get("state");
+            console.log("LCW Ready triggered----");
+            Microsoft.Omnichannel.LiveChatWidget.SDK.closeChat();
+            window.Microsoft.Omnichannel.LiveChatWidget.SDK.setBotAuthTokenProvider(async (botTokenUrl, callback) => {
+            const urlSearchParams = new URLSearchParams(botTokenUrl);
+            const signInId = urlSearchParams.get("state");
 
-        //const { DIRECTLINEtoken } = await fetchJSON(tokenEndpoint);
-        
-        if (signInIds.includes(signInId)) { // Ignore authenticated sign-in cards
-            callback({show: false});  // Hide card
-            return;
-        }
-
-        signInIds.push(signInId);
-
-        //const authUrl = ""; // Customer's Authentication API
-        //const authResponse = await fetch(authUrl, { method: "POST" });
-        //const { token } = oktaSignIn.authClient.getAccessToken();  // Customer's Auth Token
-
-        const data = {
-            token: oktaToken
-        };
-
-        const payload = {
-            method: "POST",
-            headers: {
-            "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)
-        };
-        console.error("payload:", payload);
-        
-        try {
-            const botAuthResponse = await fetch(botTokenUrl, payload); // Posts Auth Token to Bot directly
-
-            // Sign in through Bot is successful
-            if (botAuthResponse.status === 200) {
-            signInIds.push(signInId); // Track authenticated sign-in card
-            callback({ show: false }); // Hide card
-            return;
+            if (signInIds.includes(signInId)) { // Ignore authenticated sign-in cards
+                callback({show: false});  // Hide card
+                return;
             }
 
-            if (botAuthResponse.status === 404 || botAuthResponse.status == 202) {
-            callback({ show: false }); // Hide card
-            return;
-            } else {
-            // Other condition handling    
+            signInIds.push(signInId);
+
+            const data = {
+                token: oktaToken
+            };
+
+            const payload = {
+                method: "POST",
+                headers: {
+                "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            };
+
+            console.log("Payload for login into Copilot Studio:", payload);
+
+            try {
+                const botAuthResponse = await fetch(botTokenUrl, payload); // Posts Auth Token to Bot directly
+
+                // Sign in through Bot is successful
+                if (botAuthResponse.status === 200) {
+                signInIds.push(signInId); // Track authenticated sign-in card
+                callback({ show: false }); // Hide card
+                return;
+                }
+
+                if (botAuthResponse.status === 404 || botAuthResponse.status == 202) {
+                callback({ show: false }); // Hide card
+                return;
+                } else {
+                // Other condition handling    
+                }
+                console.log("Bot Auth Response:", botAuthResponse);
+                return;
+            } catch (error) {
+                // Handle error if needed
             }
-            console.log("Bot Auth Response:", botAuthResponse);
-            return;
-        } catch (error) {
-            // Handle error if needed
-        }
-        // If the authentication fails, show the sign-in card
-        console.error("Authentication failed:", error);
+            // If the authentication fails, show the sign-in card
+            console.error("Authentication failed:", error);
+            callback({ show: true });  // Show sign-in card by default
+        })
+        });
 
-        callback({ show: true });  // Show sign-in card by default
-    });
-    });
-
-    auth.getAuthenticationToken = function(callback) {
+        auth.getAuthenticationToken = function(callback) {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
@@ -228,20 +226,16 @@
         };
         //Replace this with a call to your token generating service
         xhttp.open("GET", "https://copilot-d365-gqh5b8fwfnepdbdv.westus-01.azurewebsites.net/privatekey", true);
-        console.log("Sending token to: " + oktaToken);
+        console.log("Sending token to Omnichannel: " + oktaToken);
         xhttp.setRequestHeader("Authorization", "Bearer " + oktaToken);
         xhttp.send();
-
-        //Replace this with a call to your token generating service
-        //xhttp.open("GET", "https://copilot-d365-gqh5b8fwfnepdbdv.westus-01.azurewebsites.net/privatekey", true);
-        //xhttp.send();
     };
 
     async function renderChatWidget() {
         document.getElementById('chat-container').style.visibility = 'visible';
         document.getElementById('sign-out-button').style.visibility = 'visible';
-        document.getElementById("Microsoft_Omnichannel_LCWidget").setAttribute("data-hide-chat-button", false);
     }
+    
     </script>
 </body>
 </html>

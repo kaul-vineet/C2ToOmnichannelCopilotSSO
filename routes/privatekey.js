@@ -8,20 +8,21 @@ require("dotenv").config();
 router.get('/', async function(req, res){
   
   try {
-    var privateKEY  = fs.readFileSync('./keys/private.key', 'utf8');
+    // var privateKEY  = fs.readFileSync('./keys/private.key', 'utf8');
     const secondsSinceEpoch = Math.round(Date.now()/ 1000);
     const oneHour = 60*60;
 
     var signOptions = {
       algorithm: 	"RS256"
     };
-
+    
     const authHeaderToken = req.headers.authorization.split(' ')[1];
     const authorizationServerId = process.env.OKTA_AUTHORIZATION_SERVER;
     const yourOktaDomain = process.env.OKTA_ORG_URL;
     const yourOktaClientID = process.env.OKTA_CLIENT_ID;
+    const privateKEY = process.env.PRIVATE_KEY.replace(/\\n/g,"\n");
 
-  
+    console.log("This is the private key:", privateKEY);
     // Get the payload from Okta based on the Okta token.
     console.log("This is the url:", `${yourOktaDomain}/oauth2/${authorizationServerId}/v1/introspect?token=${authHeaderToken}&client_id=${yourOktaClientID}`);
     
@@ -49,17 +50,17 @@ router.get('/', async function(req, res){
         "exp": secondsSinceEpoch + oneHour,
         "iss": "copilot-d365-gqh5b8fwfnepdbdv.westus-01.azurewebsites.net"
     };
-
-    console.log("This is the sampple payload to Omnichannel:", jwtPayloadSample);
+    console.log("This is the sample payload to Omnichannel:", jwtPayloadSample);
 
     var token = jwt.sign(JSON.stringify(jwtPayloadSample), privateKEY, signOptions);
-    // var token = jwt.sign(jwtPayload, privateKEY, signOptions);
+
     console.log("This is the signed token:", token);
 
     res.charset = 'utf-8'
     res.set({
         'content-type': 'application/jwt'
     }).send(token);
+
   } catch (error) {
             // Handle error if needed
             console.error("Error occurred while setting token:", error);
