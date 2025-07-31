@@ -11,9 +11,7 @@ To run this sample app, including the end-to-end SSO flow with OKTA, you will ne
 
 2. Create an OKTA developer account, or use an existing one
 
-3. Create a new app integration in OKTA
-
-4. Create a new app integration in OKTA
+3. Create a new app integration in OKTA.
 
 5. Configure the default access policy in the OTKA authorization server
 
@@ -28,53 +26,52 @@ To run this sample app, including the end-to-end SSO flow with OKTA, you will ne
 ### Deploy sample app to Azure Web Services
 
  1. Navigate to your project directory.
- `cd <your-react-app-folder>` 
+ 
+     `cd <your-react-app-folder>` 
  
  2. Initialize the local Git repository using the command.
-`git clone [repository_url]`
+
+	`git clone [repository_url]`
  
  3. Log in to Azure CLI.
-`az login` 
+
+	`az login` 
  
  4. Create an Azure Web App. Replace  `<>`  with your desired values.
- `az group create --name <your-resource-group-name> --location <your-location>` 
  
-	 `az appservice plan create --name <your-app-service-plan-name> --resource-group <your-resource-group-name> --sku F1 ` 
+	 `az group create --name <your-resource-group-name> --location <your-location>` 
+ 
+	`az appservice plan create --name <your-app-service-plan-name> --resource-group <your-		resource-group-name> --sku F1 ` 
 
 	`az webapp create --resource-group <your-resource-group-name> --plan <your-app-service-plan-name> --name <your-app-name> ` 
   
  5. Navigate to your React app's build directory.
- `cd <your-react-app-folder>/build` 
+ 
+	 `cd <your-react-app-folder>/build` 
 
- 6. Deploy the build folder to the Azure App Services.
- ` az webapp deployment source config-zip --resource-group <your-resource-group-name> --name <your-app-name> --src ./` 
+ 7. Deploy the build folder to the Azure App Services.
+ 
+	 ` az webapp deployment source config-zip --resource-group <your-resource-group-name> --name <your-app-name> --src ./` 
 
-### Deploy sample app to Azure Web Services
+8. Login into [Azure Portal](https://portal.azure.com/). Search for App Services and click on `<your-app-name>`. 
 
-Deploy [index.html](./public/index.html) and [signout.html](./public/signout.html) on a local or a remote server, so they are available via two URLs. For example: [http://localhost:8080/index.html](http://localhost:8080/index.html) and [http://localhost:8080/signout.html](http://localhost:8080/signout.html)
+9. Verify **Status = Running** on the detail page. Copy the `Default domain` from the detail page. 
 
-### Configure OKTA
-
+### Create an OKTA developer account
 1. Sign up for an [OKTA developer account](https://developer.okta.com/signup/)
 
-2. Sign in to the OKTA admin dashboard at **https://{your domain}-admin.okta.com/** and create a new app integration with the following details.
+### Create a new app integration in OKTA.
 
-| Application Property | Value |
+1. Sign in to the OKTA admin dashboard at **https://{your domain}-admin.okta.com/** and create a new app integration with the following details.
 
-| ---------------------- | ------------------------------------------------------------------- |
-
+|Application Property|Value|
+|--|--|
 | Sign-in method | OIDC - OpenID Connect |
-
 | Application type | Single-Page Application |
-
 | Grant type | Authorization Code, Interaction Code |
-
 | Sign-in redirect URIs | the URL to index.html |
-
 | Sign-out redirect URIs | the URL to signout.html |
-
 | Trusted origins | your base URL, for example http://localhost:8080 |
-
 | Assignments | allow access to specific users or groups based on your requirements |
 
 
