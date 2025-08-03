@@ -12,8 +12,8 @@ To run this sample app, including the end-to-end SSO flow with OKTA, you will ne
 3. Create a new app integration in OKTA.
 5. Configure the default access policy in the OTKA authorization server.
 6. Setup manual authentication in Copilot Studio and D365 Omnichannel.
-7. Update environment variables and constants in the app. 
-8. Redeploy sample app.* 
+7. Update constants in the app. 
+8. Redeploy sample app.
 
 ## Detailed instructions
 
@@ -63,11 +63,10 @@ To run this sample app, including the end-to-end SSO flow with OKTA, you will ne
 | Sign-in method | OIDC - OpenID Connect |
 | Application type | Single-Page Application |
 | Grant type | Authorization Code, Interaction Code |
-| Sign-in redirect URIs | the URL to `<your-app-name>` |
-| Sign-out redirect URIs | the URL to `<your-app-name>/signout` |
-| Trusted origins | your base URL i.e. `<your-app-name>` |
+| Sign-in redirect URIs | the URL to `https://<Default domain>` |
+| Sign-out redirect URIs | the URL to `https://<Default domain>/signout` |
+| Trusted origins | your base URL i.e. `https://<Default domain>` |
 | Assignments | allow access to specific users or groups based on your requirements |
-
 
 3. After creating the app integration, note its Client ID
 
@@ -87,6 +86,8 @@ To run this sample app, including the end-to-end SSO flow with OKTA, you will ne
 
 ### Setup manual authentication in Copilot Studio and D365 Omnichannel.
 
+> This section assumes that [Copilot handoff to Dynamics 365 Customer Service](https://learn.microsoft.com/en-us/microsoft-copilot-studio/configuration-hand-off-omnichannel?tabs=webApp) is configured.
+
 #### D365 Omnichannel:
 
  1. Install [Git Bash](https://www.atlassian.com/git/tutorials/git-bash) on your machine.
@@ -99,7 +100,7 @@ To run this sample app, including the end-to-end SSO flow with OKTA, you will ne
  
 > Make sure the entire text is copied beginning with "-----BEGIN PUBLIC KEY-----" and ending with "-----END PUBLIC KEY-----". 
 
- 5. Generate a public key file by running the command on git bash. Rename the file `public.key` and store it `\keys` project folder. 
+ 5. Generate a public key file by running the command on git bash. Rename the file `public.key` and store it `/keys` project folder. 
  
 	 `openssl rsa -pubout -in private_key.pem -out public_key.pem`
  
@@ -115,17 +116,41 @@ To run this sample app, including the end-to-end SSO flow with OKTA, you will ne
    | Name | Enter a name for the authentication setting. |
    | Owner| Accept the default value or change it to a required value.|
    |Authentication type|By default, OAuth 2.0 can't be edited.|
-   |Public key URL|`<your-app-name>/publickey`|      
+   |Public key URL|`https://<Default domain>/publickey`|      
    |JavaScript client function|auth.getAuthenticationToken |
 
- 7. gfhdhfhd
- 8. dhdv
- 9. dhfgdhgfhd
+ 7. In Copilot Service admin center, edit the chat widget in the Workstream settings, and then go to the **Behaviors** tab.
+ 
+ 9. In the **Authentication settings** box, browse and select the chat authentication record.
 
 #### Copilot Studio:
- 5. This SSO pattern will work for copilots configured with [manual authentication and any OAuth authentication provider](https://learn.microsoft.com/en-us/microsoft-copilot-studio/configuration-end-user-authentication#manual-authentication-fields). Since it is a passthrough pattern, in which the token is sent to Copilot Studio, but not validated, it will even work when no values are provided for an authentication provider. To configure manual authentication without providing any real values, select "Azure Active Directory v2" and enter **placeholder** in both client ID and secret.
+ 1. In the Copilot Studio **Settings** select **Security**. Set  **Authentication** to **Authenticate manually**. 
+ 
+ 2. Provide the following information on the **Authentication** page:
+   
+   | Application Property | Value |
+   |--|--|
+   | Redirect URL | `https://token.botframework.com/.auth/web/redirect` |
+   | Service provider| Generic OAuth 2|
+   | All other values| String - `placeholder`|
+   
+ 3. This SSO pattern will work for copilots as a pass-through pattern, in which the token is sent to Copilot Studio, but not validated, it will even work when no values are provided for an authentication provider. 
+ 
+ 4. Create a new topic Validate Token from code in file `/copilot/Validate Token.yaml`.
+ 
+ 5. Provide the following placeholder and save topic.
 
-  
+| Placeholder | Value |
+   |--|--|
+   | OktaValidationURL | `https://{yourOktaDomain}/oauth2/` |
+   | OktaValidationURI| `{yourOktaAuthServer}/v1/introspect`|
+   | OktaClientId| Client ID of Okta app noted above.|
+
+ 6. Edit system topic `Sign in`. At the end of the topic, add a `redirect` node to topic `Validate Token`.
+
+ 7. Publish the agent.
+
+### Update constants in the app.
 
 <p  align="center">
 
