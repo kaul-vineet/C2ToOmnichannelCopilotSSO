@@ -1,25 +1,19 @@
 
 # Unified SSO with Copilot Agent and D365 Omnichannel
 
-This custom app demonstrates unified SSO with Copilot Agent and D365 Omnichannel using a 3rd party authentication provider.  
+This sample app demonstrates unified SSO with Copilot Agent and D365 Omnichannel using a 3rd party authentication provider.  
 
 ## Getting started
 
 To run this sample app, including the end-to-end SSO flow with OKTA, you will need to:
 
-1. Deploy sample app to Azure Web Services. 
-
+1. Deploy sample app to Azure Web Services.
 2. Create an OKTA developer account, or use an existing one
-
 3. Create a new app integration in OKTA.
-
-5. Configure the default access policy in the OTKA authorization server
-
+5. Configure the default access policy in the OTKA authorization server.
 6. Setup manual authentication in Copilot Studio and D365 Omnichannel.
-
 7. Update environment variables and constants in the app. 
-
-8. Redeploy sample app. 
+8. Redeploy sample app.* 
 
 ## Detailed instructions
 
@@ -69,15 +63,15 @@ To run this sample app, including the end-to-end SSO flow with OKTA, you will ne
 | Sign-in method | OIDC - OpenID Connect |
 | Application type | Single-Page Application |
 | Grant type | Authorization Code, Interaction Code |
-| Sign-in redirect URIs | the URL to index.html |
-| Sign-out redirect URIs | the URL to signout.html |
-| Trusted origins | your base URL, for example http://localhost:8080 |
+| Sign-in redirect URIs | the URL to `<your-app-name>` |
+| Sign-out redirect URIs | the URL to `<your-app-name>/signout` |
+| Trusted origins | your base URL i.e. `<your-app-name>` |
 | Assignments | allow access to specific users or groups based on your requirements |
 
 
 3. After creating the app integration, note its Client ID
 
-4.  **Index.html** uses the OKTA sign-in widget which relies on the Interaction Code sign-in flow. To enable the Interaction Code flow:
+4. This sample app uses the OKTA sign-in widget which relies on the Interaction Code sign-in flow. To enable the Interaction Code flow:
 
 1. Navigate to the API settings page under ***Security -> API***
 
@@ -89,15 +83,47 @@ To run this sample app, including the end-to-end SSO flow with OKTA, you will ne
 
 5. Update the rule
 
-6. You should also verify that CORS has been enabled for your base URL. On the same API page, under the ***Trusted Origins*** tab, your base url (e.g. http://localhost:8080) should appear under ***Trusted Origins*** with CORS enabled. In case your base url is missing, add the url with CORS enabled.
+6. You should also verify that CORS has been enabled for your base URL. On the same API page, under the ***Trusted Origins*** tab, your base URL i.e. `<your-app-name>` should appear under ***Trusted Origins*** with CORS enabled. In case your base url is missing, add the url with CORS enabled.
 
-  
+### Setup manual authentication in Copilot Studio and D365 Omnichannel.
 
-### Configure authentication in Copilot Studio, and obtain the token endpoint
+#### D365 Omnichannel:
 
-  
+ 1. Install [Git Bash](https://www.atlassian.com/git/tutorials/git-bash) on your machine.
+ 
+ 2. Generate a private key by running the command on git bash. 
+ 
+	 `openssl genpkey -algorithm RSA -out private_key.pem -pkeyopt rsa_keygen_bits:2048`
+ 
+ 3. Open the `private_key.pem` using text editor. Copy the key and update the  `PRIVATE_KEY` environment variable in `.env` file in the root folder. 
+ 
+> Make sure the entire text is copied beginning with "-----BEGIN PUBLIC KEY-----" and ending with "-----END PUBLIC KEY-----". 
 
-1. This SSO pattern will work for copilots configured with [manual authentication and any OAuth authentication provider](https://learn.microsoft.com/en-us/microsoft-copilot-studio/configuration-end-user-authentication#manual-authentication-fields). Since it is a passthrough pattern, in which the token is sent to Copilot Studio, but not validated, it will even work when no values are provided for an authentication provider. To configure manual authentication without providing any real values, select "Azure Active Directory v2" and enter **placeholder** in both client ID and secret.
+ 5. Generate a public key file by running the command on git bash. Rename the file `public.key` and store it `\keys` project folder. 
+ 
+	 `openssl rsa -pubout -in private_key.pem -out public_key.pem`
+ 
+ 6. Create a chat authentication setting record in the D365 Admin App.
+     1. In the site map of Copilot Service admin center, select **Customer Settings**.
+	 
+     2. In the **Authentication settings** section, select **Manage**.
+	 
+     3. Select **New Authentication Settings**, and then provide the following information on the **Add authentication setting** page:
+    
+   | Application Property | Value |
+   |--|--|
+   | Name | Enter a name for the authentication setting. |
+   | Owner| Accept the default value or change it to a required value.|
+   |Authentication type|By default, OAuth 2.0 can't be edited.|
+   |Public key URL|`<your-app-name>/publickey`|      
+   |JavaScript client function|auth.getAuthenticationToken |
+
+ 7. gfhdhfhd
+ 8. dhdv
+ 9. dhfgdhgfhd
+
+#### Copilot Studio:
+ 5. This SSO pattern will work for copilots configured with [manual authentication and any OAuth authentication provider](https://learn.microsoft.com/en-us/microsoft-copilot-studio/configuration-end-user-authentication#manual-authentication-fields). Since it is a passthrough pattern, in which the token is sent to Copilot Studio, but not validated, it will even work when no values are provided for an authentication provider. To configure manual authentication without providing any real values, select "Azure Active Directory v2" and enter **placeholder** in both client ID and secret.
 
   
 
