@@ -3,6 +3,21 @@
 
 This sample app demonstrates unified SSO with Copilot Agent and D365 Omnichannel using a 3rd party authentication provider.  
 
+## Authentication Process
+
+You can render UML diagrams using [Mermaid](https://mermaidjs.github.io/). For example, this will produce a sequence diagram:
+
+```mermaid
+sequenceDiagram
+Website-->> Okta: Hello Bob, how are you?
+Okta-->>Chat Widget: How about you John?
+Website-->> Copilot Studio: I am good thanks!
+Copilot Studio--> Chat Widget: I am good thanks!
+Website-->> D365 Omnichannel: I am good thanks!
+D365 Omnichannel--> Chat Widget : I am good thanks!
+
+Note right of D365 Omnichannel: Bob thinks a long<br/>long time, so long<br/>that the text does<br/>not fit on a row.
+```
 ## Getting started
 
 To run this sample app, including the end-to-end SSO flow with OKTA, you will need to:
@@ -151,6 +166,21 @@ To run this sample app, including the end-to-end SSO flow with OKTA, you will ne
  7. Publish the agent.
 
 ### Update constants in the app.
+1. Update app constants in `views/chatwidget.html.env` file. Save the file after updates.
+| Placeholder | Value |
+   |--|--|
+   | baseUrl| `https://<mydomain>.okta.com`|
+   | clientId| The Client ID of the OKTA application noted above.|
+   | defaultdomain| `https://<Default domain>`|
+   | botTokenUrl| In the Copilot Studio select **Channels** and **Web App**. Copy the **Connection String** value. |
+2. Update environment variable in `.env` file in the root folder. Save the file after updates.
+| Placeholder | Value |
+   |--|--|
+   | OKTA_ORG_URL| `https://<mydomain>.okta.com`|
+   | OKTA_CLIENT_ID| The Client ID of the OKTA application noted above.|
+   | OKTA_SCOPES| `okta.users.read`|
+   | OKTA_REDIRECT_URI| `https://<Default domain>`|
+   | OKTA_AUTHORIZATION_SERVER| `default` |
 
 <p  align="center">
 
@@ -163,57 +193,11 @@ To run this sample app, including the end-to-end SSO flow with OKTA, you will ne
 </p>
 
   
-
-> [!IMPORTANT]
-
-> When using "placeholder" instead of real values, SSO will not work in the test canvas.
-
-> After making any changes to the copilot's authentication settings, publish the copilot.
-
-  
-
-2. Copy the copilot's token endpoint from Settings -> Channels -> Mobile App
-
-  
-
-### Populate configuration values in index.html
-
-  
-
-1. Populate the following values in index.html, based on your configuration
-
-  
-
-| Variable | Value |
-
-| --------------------- | ----------------------------------------------------------------------------------------- |
-
-| baseUrl | your OKTA domain, for example: https://mydomain.okta.com/ |
-
-| clientID | The Client ID of the OKTA application |
-
-| redirectUri | the URL for index.html, for example: http://localhost:8080/src/index.html |
-
-| issuer | {your OKTA domain}/oauth2/default, for example: https://mydomain.okta.com/oauth2/default |
-
-| tokenEndpoint | Your copilot's token endpoint |
-
-| postLogoutRedirectUri | he URL for signout.html, for example: http://localhost:8080/src/signout.html |
-
-  
-
-2. Publish or save index.html, depending if it is deployed locally or remotely
-
-  
-
 ### Test the SSO flow
-
-  
 
 After signing-in using the OKTA sign-in widget, the user's access token will be sent to Copilot Studio and stored in ***System.User.AccessToken***, which can be used by copilot makers to make calls to protected APIs
 
-  
-  
+
 
 <p  align="center">
 

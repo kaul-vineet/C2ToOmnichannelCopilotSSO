@@ -30,6 +30,9 @@
         let oktaSignIn;
         let oktaToken;
         const botTokenUrl = "https://4107ffcb4d1ce0adb962846b6eb233.0f.environment.api.powerplatform.com/powervirtualagents/botsbyschema/cr097_vineetKaulAgent/directline/token?api-version=2022-03-01-preview"
+        const defaultdomain = "https://copilot-d365-gqh5b8fwfnepdbdv.westus-01.azurewebsites.net"
+        const clientId = "0oasew2r50h7dVgeC697"
+        const baseUrl = "https://trial-5352495.okta.com"
         let signInIds = []; // Array to track authenticated sign-in cards
         var auth = {};
         const appName = "My Awesome App";
@@ -38,7 +41,7 @@
         function signOut() {
             oktaSignIn.authClient.signOut({
                 clearTokensBeforeRedirect: true,
-                postLogoutRedirectUri: "https://copilot-d365-gqh5b8fwfnepdbdv.westus-01.azurewebsites.net/signout" // For example, 'http://127.0.0.1:5501/CopilotStudioSamples/3rdPartySSOWithOKTA/public/signout.html'
+                postLogoutRedirectUri: `${defaultdomain}/signout` // The signout page URL, 'https://<Default domain>/signout.html'
             });
         }
 
@@ -58,12 +61,12 @@
 
         window.addEventListener("lcw:ready", function signOkta() {
             oktaSignIn = new OktaSignIn({
-            baseUrl: "https://trial-5352495.okta.com", //e.g. https://mydomain.okta.com
-            clientId: "0oasew2r50h7dVgeC697",
-            redirectUri: "https://copilot-d365-gqh5b8fwfnepdbdv.westus-01.azurewebsites.net", // For example http://localhost:5501/CopilotStudioSamples/3rdPartySSOWithOKTA/public/index.html
+            baseUrl: baseUrl, //e.g. https://mydomain.okta.com
+            clientId: clientId, // 
+            redirectUri: defaultdomain, // For example http://localhost:5501/CopilotStudioSamples/3rdPartySSOWithOKTA/public/index.html
             authParams: {
                 responseType: ['code'],
-                issuer: "https://trial-5352495.okta.com/oauth2/default", // for example: https://mydomain.okta.com/oauth2/default
+                issuer: `${baseUrl}/oauth2/default`, // for example: https://mydomain.okta.com/oauth2/default
                 display: 'page',
                 pkce: true,
                 scopes: ['openid', 'email', 'profile'],
@@ -159,7 +162,7 @@
             callback(null);
         };
         //Replace this with a call to your token generating service
-        xhttp.open("GET", "https://copilot-d365-gqh5b8fwfnepdbdv.westus-01.azurewebsites.net/privatekey", true);
+        xhttp.open("GET",`${defaultdomain}/privatekey`, true);
         console.log("Sending token to Omnichannel: " + oktaToken);
         xhttp.setRequestHeader("Authorization", "Bearer " + oktaToken);
         xhttp.send();
