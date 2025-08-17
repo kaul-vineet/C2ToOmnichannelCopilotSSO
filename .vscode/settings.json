@@ -1,4 +1,4 @@
 {
-    "appService.defaultWebAppToDeploy": "/subscriptions/4b4d728a-e8a2-4257-86d6-0f572887ebea/resourceGroups/VSEOpenAIResourceGroup/providers/Microsoft.Web/sites/copilot-d365",
+    "appService.defaultWebAppToDeploy": "/subscriptions/4b4d728a-e8a2-4257-86d6-0f572887ebea/resourceGroups/VSEOpenAIResourceGroup/providers/Microsoft.Web/sites/AuthApp-T",
     "appService.deploySubpath": "."
 }
