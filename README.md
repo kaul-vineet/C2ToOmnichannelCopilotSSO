@@ -230,6 +230,6 @@ Follow the demo steps below to test SSO flow -
 <em> Go to `https://[Default domain]` </em>
 
 <p  align="center">
-<img  src="./imgages/Step1GotoToLogin.png"  alt="Go to `https://[Default domain]`"  width="400px">
+<img  src="/images/Step1GotoToLogin.png"  alt="Go to `https://[Default domain]`"  width="400px">
 <br>
 </p>
