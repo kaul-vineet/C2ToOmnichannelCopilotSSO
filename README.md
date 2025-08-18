@@ -5,73 +5,84 @@ This sample app demonstrates unified SSO with Copilot Agent and D365 Omnichannel
 
 ## Authentication Process
 
-You can render UML diagrams using [Mermaid](https://mermaidjs.github.io/). For example, this will produce a sequence diagram:
-
 ```mermaid
 sequenceDiagram
-Website-->> Okta: Hello Bob, how are you?
-Okta-->>Chat Widget: How about you John?
-Website-->> Copilot Studio: I am good thanks!
-Copilot Studio--> Chat Widget: I am good thanks!
-Website-->> D365 Omnichannel: I am good thanks!
-D365 Omnichannel--> Chat Widget : I am good thanks!
+Note left of Chat Widget: 1. Client side Okta <br/>Authentication widget <br/>.
+Chat Widget -->> Okta: 2. Send authentication challenge.
+Okta-->> Chat Widget: 3. Return access token.
+Chat Widget -->> Copilot Studio: 4. Send access token.
+Note left of Copilot Studio: 5. Validates token by<br/> retrospection end point, <br/>.
+Copilot Studio -->> Chat Widget: 6. Return auth confirmation.
+Note left of Chat Widget: 7. Sign token <br/>with private key. <br/>.
+Chat Widget -->> D365 Omnichannel: 8. Send signed access token.
+Note right of D365 Omnichannel: 7. Validates token <br/>with public key. <br/>.
+D365 Omnichannel -->> Chat Widget : Return auth confirmation.
 
-Note right of D365 Omnichannel: Bob thinks a long<br/>long time, so long<br/>that the text does<br/>not fit on a row.
 ```
 ## Getting started
 
-To run this sample app, including the end-to-end SSO flow with OKTA, you will need to:
+To run this sample app with end-to-end SSO flow with OKTA, you will need to:
 
-1. Deploy sample app to Azure Web Services.
+1. Deploy sample app to Azure.
 2. Create an OKTA developer account, or use an existing one
 3. Create a new app integration in OKTA.
 5. Configure the default access policy in the OTKA authorization server.
 6. Setup manual authentication in Copilot Studio and D365 Omnichannel.
-7. Update constants in the app. 
-8. Redeploy sample app.
+7. Update constants in the sample app. 
+8. Redeploy sample app to Azure.
+
+> Replace  `<>`  with your appropriate values.</em>
 
 ## Detailed instructions
 
-### Deploy sample app to Azure Web Services
+### Deploy sample app to Azure
 
- 1. Navigate to your project directory.
+1. Navigate to your project directory.
  
-     `cd <your-react-app-folder>` 
+     `cd <your-project-folder>` 
  
  2. Initialize the local Git repository using the command.
 
-	`git clone [repository_url]`
+	`git clone <repository_url>`
  
- 3. Log in to Azure CLI.
+ 3. Log in to Azure CLI. The steps assumes and active subscription and resource group `<myResourceGroup>`.
 
 	`az login` 
  
- 4. Create an Azure Web App. Replace  `<>`  with your desired values.
- 
-	 `az group create --name <your-resource-group-name> --location <your-location>` 
- 
-	`az appservice plan create --name <your-app-service-plan-name> --resource-group <your-		resource-group-name> --sku F1 ` 
+ 4. Deploy the sample app to Azure using Azure CLI commands. 
+	- Create a App Service Plan in Azure:
+	
+		`az appservice plan create --name <myAppServicePlan> --resource-group <myResourceGroup> --sku <sku> --location <location>` 
 
-	`az webapp create --resource-group <your-resource-group-name> --plan <your-app-service-plan-name> --name <your-app-name> ` 
-  
- 5. Navigate to your React app's build directory.
+	> **Example:** az appservice plan create --name myAppServicePlan --resource-group myResourceGroup --sku P0v3 --location "West US"
+
+	- Create a Web App. Use the App Service Plan created in the previous step in the --name parameter:
+	
+		 `az webapp create --name <myWebapp> --resource-group <myResourceGroup> --plan <myAppServicePlan>
+` 
+
+	> **Example:**  az webapp create --name  myWebapp --resource-group  myResourceGroup --plan  myAppServicePlan
+
+	- Deploy code from repository. Use the Web App name created in the previous step in the --name parameter  		
+	
+		` az webapp deployment source config --name <myWebapp> --resource-group <myResourceGroup> --repo-url <repository_url> --branch master --manual-integration`
+
+	> **Example:** az webapp deployment source config --name myWebapp --resource-group myResourceGroup --repo-url <repository_url> --branch master --manual-integration
+
  
-	 `cd <your-react-app-folder>/build` 
+8. Login into [Azure Portal](https://portal.azure.com/). Search for app created in the previous step and go to **Overview** page. 
 
- 7. Deploy the build folder to the Azure App Services.
- 
-	 ` az webapp deployment source config-zip --resource-group <your-resource-group-name> --name <your-app-name> --src ./` 
-
-8. Login into [Azure Portal](https://portal.azure.com/). Search for App Services and click on `<your-app-name>`. 
-
-9. Verify **Status = Running** on the detail page. Copy the `Default domain` from the detail page. 
+9. Verify **Status = Running** on the **Overview** page. Copy the `Default domain` from the detail page. 
 
 ### Create an OKTA developer account
 1. Sign up for an [OKTA developer account](https://developer.okta.com/signup/)
 
 ### Create a new app integration in OKTA.
 
-1. Sign in to the OKTA admin dashboard at **https://{your domain}-admin.okta.com/** and create a new app integration with the following details.
+1. Sign in to the OKTA admin dashboard. 
+	- Note the URL **https://{your OKTA domain}-admin.okta.com/**.
+	- Note the `{yourOktaDomain}`.
+	- Create a new app integration with the following details.
 
 |Application Property|Value|
 |--|--|
@@ -87,17 +98,15 @@ To run this sample app, including the end-to-end SSO flow with OKTA, you will ne
 
 4. This sample app uses the OKTA sign-in widget which relies on the Interaction Code sign-in flow. To enable the Interaction Code flow:
 
-1. Navigate to the API settings page under ***Security -> API***
+5. Navigate to the API settings page under ***Security -> API***
 
-2. Under the Authorization Servers tab, edit the default authorization server
+6. Under the Authorization Servers tab, note the default authorization server Name - `{yourOktaAuthServer}`.
 
-3. Under Access Policies, edit the default policy rule
+8. Edit the default authorization server. Under Access Policies, edit the default policy rule
 
-4. Under ***IF Grant type is*** -> ***Other grants***, click on **Interaction Code**.
+10. Under ***IF Grant type is*** -> ***Other grants***, click on **Interaction Code**. Update the rule
 
-5. Update the rule
-
-6. You should also verify that CORS has been enabled for your base URL. On the same API page, under the ***Trusted Origins*** tab, your base URL i.e. `<your-app-name>` should appear under ***Trusted Origins*** with CORS enabled. In case your base url is missing, add the url with CORS enabled.
+11. Verify that CORS has been enabled for your base URL. On the same API page, under the ***Trusted Origins*** tab, base URL of the app i.e. `https://<Default domain>` should appear under ***Trusted Origins*** with CORS and -   Redirect enabled. In case base URL is missing, add the URL i.e. `https://<Default domain>` with CORS and Redirect enabled.
 
 ### Setup manual authentication in Copilot Studio and D365 Omnichannel.
 
@@ -113,9 +122,9 @@ To run this sample app, including the end-to-end SSO flow with OKTA, you will ne
  
  3. Open the `private_key.pem` using text editor. Copy the key and update the  `PRIVATE_KEY` environment variable in `.env` file in the root folder. 
  
-> Make sure the entire text is copied beginning with "-----BEGIN PUBLIC KEY-----" and ending with "-----END PUBLIC KEY-----". 
+	> Make sure the entire text is copied beginning with "-----BEGIN PUBLIC KEY-----" and ending with "-----END PUBLIC KEY-----". 
 
- 5. Generate a public key file by running the command on git bash. Rename the file `public.key` and store it `/keys` project folder. 
+ 5. Generate a public key file by running the command on git bash. Rename the file `public.key` and save the file in `/keys` project folder. 
  
 	 `openssl rsa -pubout -in private_key.pem -out public_key.pem`
  
@@ -165,22 +174,43 @@ To run this sample app, including the end-to-end SSO flow with OKTA, you will ne
 
  7. Publish the agent.
 
-### Update constants in the app.
-1. Update app constants in `views/chatwidget.html.env` file. Save the file after updates.
+### Update constants in the sample app.
+1. Update sample app constants in `views/chatwidget.html.env` file. Save the file after updates.
+
 | Placeholder | Value |
    |--|--|
-   | baseUrl| `https://<mydomain>.okta.com`|
+   | baseUrl| `https://{yourOktaDomain}.okta.com`|
    | clientId| The Client ID of the OKTA application noted above.|
    | defaultdomain| `https://<Default domain>`|
    | botTokenUrl| In the Copilot Studio select **Channels** and **Web App**. Copy the **Connection String** value. |
 2. Update environment variable in `.env` file in the root folder. Save the file after updates.
+
 | Placeholder | Value |
    |--|--|
-   | OKTA_ORG_URL| `https://<mydomain>.okta.com`|
+   | OKTA_ORG_URL| `https://{yourOktaDomain}.okta.com`|
    | OKTA_CLIENT_ID| The Client ID of the OKTA application noted above.|
    | OKTA_SCOPES| `okta.users.read`|
    | OKTA_REDIRECT_URI| `https://<Default domain>`|
    | OKTA_AUTHORIZATION_SERVER| `default` |
+
+### Redeploy updated sample app to Azure
+1. Navigate to your project directory.
+ 
+     `cd <your-project-folder>` 
+     
+2. Source the project to local git.
+
+	` az webapp deployment source config-local-git --name <myWebapp>  --resource-group <myResourceGroup>`
+      
+4. Create a zip file for deployment.
+
+	` Compress-Archive -Path * -DestinationPath deployment\deployment.zip`
+
+5. Confirm that file `deployment.zip` is created in the `/deployment` folder.
+
+6. Redeploy sample app to Azure.
+
+	` az webapp deployment source config-zip --resource-group <myResourceGroup> --name <myWebapp> --src deployment\deployment.zip`
 
 <p  align="center">
 
@@ -188,36 +218,18 @@ To run this sample app, including the end-to-end SSO flow with OKTA, you will ne
 
 <br>
 
-<em>Manual authentication without real values</em>
+<em>Replace  `<>`  with your desired values.</em>
 
 </p>
 
   
 ### Test the SSO flow
 
-After signing-in using the OKTA sign-in widget, the user's access token will be sent to Copilot Studio and stored in ***System.User.AccessToken***, which can be used by copilot makers to make calls to protected APIs
+Follow the demo steps below to test SSO flow - 
 
-
-
-<p  align="center">
-
-<img  src="./img/widget.png"  alt="The OKTA sign-in widget"  width="400px">
-
-<br>
-
-<em>The OKTA sign-in widget</em>
-
-</p>
-
-  
-  
+<em> Go to `https://[Default domain]` </em>
 
 <p  align="center">
-
-<img  src="./img/token.png"  alt="The user's access token"  width="400px">
-
+<img  src="./imgages/Step1GotoToLogin.png"  alt="Go to `https://[Default domain]`"  width="400px">
 <br>
-
-<em>System.User.AccessToken is populated</em>
-
 </p>
