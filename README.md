@@ -113,7 +113,7 @@ To run this sample app with end-to-end SSO flow with OKTA, you will need to:
 
 > This section assumes that [Copilot handoff to Dynamics 365 Customer Service](https://learn.microsoft.com/en-us/microsoft-copilot-studio/configuration-hand-off-omnichannel?tabs=webApp) is configured.
 
-#### Public Key / Private Key Setup:~**This sample app comes with pre configured public/private keys. This step is optional if self generated keys are not required.**~
+#### Public Key / Private Key Setup:~This sample app comes with pre configured public/private keys. This step is optional if self generated keys are not required.~
 
 1. Install [Git Bash](https://www.atlassian.com/git/tutorials/git-bash) on your machine.
  
@@ -137,7 +137,6 @@ To run this sample app with end-to-end SSO flow with OKTA, you will need to:
 <img  src="/images/PublicKey.png"  alt="Open browser and type in URL `https://<Default domain>/publickey`. The browser should display public key definition."  width="800px">
 <br>
 </p>
-
 #### D365 Omnichannel:
  
  1. Create a chat authentication setting record in the D365 Admin App.
