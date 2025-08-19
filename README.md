@@ -228,17 +228,6 @@ To run this sample app with end-to-end SSO flow with OKTA, you will need to:
 6. Redeploy sample app to Azure.
 
 	` az webapp deployment source config-zip --resource-group <myResourceGroup> --name <myWebapp> --src deployment\deployment.zip`
-
-<p  align="center">
-
-<img  src="./img/placeholder.png"  alt="Manual authentication without real values">
-
-<br>
-
-<em>Replace  `<>`  with your desired values.</em>
-
-</p>
-
   
 ### Test the SSO flow:
 
