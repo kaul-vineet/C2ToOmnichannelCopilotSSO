@@ -36,7 +36,7 @@ To run this sample app with end-to-end SSO flow with OKTA, you will need to:
 
 ## Detailed instructions
 
-### Deploy sample app to Azure
+### Deploy sample app to Azure:
 
 1. Navigate to your project directory.
  
@@ -75,10 +75,10 @@ To run this sample app with end-to-end SSO flow with OKTA, you will need to:
 
 9. Verify **Status = Running** on the **Overview** page. Copy the `Default domain` from the detail page. 
 
-### Create an OKTA developer account
+### Create an OKTA developer account:
 1. Sign up for an [OKTA developer account](https://developer.okta.com/signup/)
 
-### Create a new app integration in OKTA.
+### Create a new app integration in OKTA:
 
 1. Sign in to the OKTA admin dashboard. 
 	- Note the URL **https://{your OKTA domain}-admin.okta.com/**.
@@ -109,13 +109,13 @@ To run this sample app with end-to-end SSO flow with OKTA, you will need to:
 
 11. Verify that CORS has been enabled for your base URL. On the same API page, under the ***Trusted Origins*** tab, base URL of the app i.e. `https://<Default domain>` should appear under ***Trusted Origins*** with CORS and -   Redirect enabled. In case base URL is missing, add the URL i.e. `https://<Default domain>` with CORS and Redirect enabled.
 
-### Setup manual authentication in Copilot Studio and D365 Omnichannel.
+### Setup manual authentication in Copilot Studio and D365 Omnichannel:
 
 > This section assumes that [Copilot handoff to Dynamics 365 Customer Service](https://learn.microsoft.com/en-us/microsoft-copilot-studio/configuration-hand-off-omnichannel?tabs=webApp) is configured.
 
-#### D365 Omnichannel:
+#### Public Key / Private Key Setup:~**This sample app comes with pre configured public/private keys. This step is optional if self generated keys are not required.**~
 
- 1. Install [Git Bash](https://www.atlassian.com/git/tutorials/git-bash) on your machine.
+1. Install [Git Bash](https://www.atlassian.com/git/tutorials/git-bash) on your machine.
  
  2. Generate a private key by running the command on git bash. 
  
@@ -125,11 +125,22 @@ To run this sample app with end-to-end SSO flow with OKTA, you will need to:
  
 	> Make sure the entire text is copied beginning with "-----BEGIN PUBLIC KEY-----" and ending with "-----END PUBLIC KEY-----". 
 
- 5. Generate a public key file by running the command on git bash. Rename the file `public.key` and save the file in `/keys` project folder. 
+ 5. Generate a public key file by running the command on git bash. 
  
 	 `openssl rsa -pubout -in private_key.pem -out public_key.pem`
+	 
+6. Rename the file `public.key` and save the file in `/keys` project folder. 
+
+7. Open browser and type in URL `https://<Default domain>/publickey`. The browser should display public key definition. 
+
+<p  align="center">
+<img  src="/images/PublicKey.png"  alt="Open browser and type in URL `https://<Default domain>/publickey`. The browser should display public key definition."  width="800px">
+<br>
+</p>
+
+#### D365 Omnichannel:
  
- 6. Create a chat authentication setting record in the D365 Admin App.
+ 1. Create a chat authentication setting record in the D365 Admin App.
      1. In the site map of Copilot Service admin center, select **Customer Settings**.
 	 
      2. In the **Authentication settings** section, select **Manage**.
@@ -144,11 +155,12 @@ To run this sample app with end-to-end SSO flow with OKTA, you will need to:
    |Public key URL|`https://<Default domain>/publickey`|      
    |JavaScript client function|auth.getAuthenticationToken |
 
- 7. In Copilot Service admin center, edit the chat widget in the Workstream settings, and then go to the **Behaviors** tab.
+ 2. In Copilot Service admin center, edit the chat widget in the Workstream settings, and then go to the **Behaviors** tab.
  
- 9. In the **Authentication settings** box, browse and select the chat authentication record.
+ 3. In the **Authentication settings** box, browse and select the chat authentication record.
 
 #### Copilot Studio:
+
  1. In the Copilot Studio **Settings** select **Security**. Set  **Authentication** to **Authenticate manually**. 
  
  2. Provide the following information on the **Authentication** page:
@@ -175,7 +187,8 @@ To run this sample app with end-to-end SSO flow with OKTA, you will need to:
 
  7. Publish the agent.
 
-### Update constants in the sample app.
+### Update constants in the sample app:
+
 1. Update sample app constants in `views/chatwidget.html.env` file. Save the file after updates.
 
 | Placeholder | Value |
@@ -184,6 +197,7 @@ To run this sample app with end-to-end SSO flow with OKTA, you will need to:
    | clientId| The Client ID of the OKTA application noted above.|
    | defaultdomain| `https://<Default domain>`|
    | botTokenUrl| In the Copilot Studio select **Channels** and **Web App**. Copy the **Connection String** value. |
+   
 2. Update environment variable in `.env` file in the root folder. Save the file after updates.
 
 | Placeholder | Value |
@@ -194,7 +208,8 @@ To run this sample app with end-to-end SSO flow with OKTA, you will need to:
    | OKTA_REDIRECT_URI| `https://<Default domain>`|
    | OKTA_AUTHORIZATION_SERVER| `default` |
 
-### Redeploy updated sample app to Azure
+### Redeploy updated sample app to Azure:
+
 1. Navigate to your project directory.
  
      `cd <your-project-folder>` 
@@ -224,53 +239,53 @@ To run this sample app with end-to-end SSO flow with OKTA, you will need to:
 </p>
 
   
-### Test the SSO flow
+### Test the SSO flow:
 
 Follow the demo steps below to test SSO flow - 
 
-1. Step 1: <em> Go to `https://[Default domain]`. . Log in using Okta Credentials. </em>
+Step 1: <em> Go to `https://[Default domain]`. . Log in using Okta Credentials. </em>
 
 <p  align="center">
 <img  src="/images/Step1GotoToLogin.png"  alt="Go to `https://[Default domain]`"  width="800px">
 <br>
 </p>
 
-2. Step 2: <em> Verify login. Logout button would be visible.</em>
+Step 2: <em> Verify login. Logout button would be visible.</em>
 
 <p  align="center">
 <img  src="/images/Step2SignedIn.png"  alt="Verify login. Logout button would be visible."  width="800px">
 <br>
 </p>
 
-3. Step 3: <em> Once logged in; click on the chat widget top open. </em>
+Step 3: <em> Once logged in; click on the chat widget top open. </em>
 
 <p  align="center">
 <img  src="/images/Step3OpenChatWidget.png"  alt="Once logged in; click on the chat widget top open."  width="800px">
 <br>
 </p> 
 
-4. Step 4: <em> Agent displays Okta identification message with username.  This step confirm Copilot Studio authentication. </em>
+Step 4: <em> Agent displays Okta identification message with username.  This step confirm Copilot Studio authentication. </em>
 
 <p  align="center">
 <img  src="/images/Step4LoggedIn.png"  alt="Agent displays Okta identification message with username.  This step confirm Copilot Studio authentication."  width="800px">
 <br>
 </p>
 
-5. Step 5: <em> Type `Escalate` in chat window to transfer chat to D365 Omnichannel. </em>
+Step 5: <em> Type `Escalate` in chat window to transfer chat to D365 Omnichannel. </em>
 
 <p  align="center">
 <img  src="/images/Step5Escalate.png"  alt="Type `Escalate` in chat window to transfer chat to D365 Omnichannel. "  width="800px">
 <br>
 </p>
 
-6. Step 6: <em> Open Omnichannel for Customer Service console in D365 Service. A chat equest notification pops with username.  This step confirm D365 Omnichannel authentication.  </em>
+Step 6: <em> Open Omnichannel for Customer Service console in D365 Service. A chat equest notification pops with username.  This step confirm D365 Omnichannel authentication.  </em>
 
 <p  align="center">
 <img  src="/images/Step7Escalate.png"  alt="Open Omnichannel for Customer Service console in D365 Service. A chat equest notification pops with username.  This step confirm D365 Omnichannel authentication.  "  width="800px">
 <br>
 </p>
 
-7. Step 7: <em> Click on accept button. Chat window opens up with Okta username for Copilot & D365 Omnichannel. </em>
+Step 7: <em> Click on accept button. Chat window opens up with Okta username for Copilot & D365 Omnichannel. </em>
 
 <p  align="center">
 <img  src="/images/Step8Final.png"  alt="Click on accept button. Chat window opens up with Okta username for Copilot & D365 Omnichannel."  width="800px">
