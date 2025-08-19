@@ -132,16 +132,16 @@ To run this sample app with end-to-end SSO flow with OKTA, you will need to:
 	 
 6. Rename the file `public.key` and save the file in `/keys` project folder. 
 
-7. Open browser and type in URL `https://<Default domain>/publickey`. The browser should display public key definition. 
+#### D365 Omnichannel:
+
+ 1. Open browser and type in URL `https://<Default domain>/publickey`. The browser should display public key definition. 
 
 <p  align="center">
 <img  src="/images/PublicKey.png"  alt="Open browser and type in URL `https://<Default domain>/publickey`. The browser should display public key definition."  width="800px">
 <br>
 </p>
-
-#### D365 Omnichannel:
  
- 1. Create a chat authentication setting record in the D365 Admin App.
+ 2. Create a chat authentication setting record in the D365 Admin App.
      1. In the site map of Copilot Service admin center, select **Customer Settings**.
 	 
      2. In the **Authentication settings** section, select **Manage**.
@@ -156,9 +156,9 @@ To run this sample app with end-to-end SSO flow with OKTA, you will need to:
    |Public key URL|`https://<Default domain>/publickey`|      
    |JavaScript client function|auth.getAuthenticationToken |
 
- 2. In Copilot Service admin center, edit the chat widget in the Workstream settings, and then go to the **Behaviors** tab.
+ 3. In Copilot Service admin center, edit the chat widget in the Workstream settings, and then go to the **Behaviors** tab.
  
- 3. In the **Authentication settings** box, browse and select the chat authentication record.
+ 4. In the **Authentication settings** box, browse and select the chat authentication record.
 
 #### Copilot Studio:
 
