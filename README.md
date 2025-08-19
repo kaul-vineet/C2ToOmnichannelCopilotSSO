@@ -138,6 +138,7 @@ To run this sample app with end-to-end SSO flow with OKTA, you will need to:
 <img  src="/images/PublicKey.png"  alt="Open browser and type in URL `https://<Default domain>/publickey`. The browser should display public key definition."  width="800px">
 <br>
 </p>
+
 #### D365 Omnichannel:
  
  1. Create a chat authentication setting record in the D365 Admin App.
