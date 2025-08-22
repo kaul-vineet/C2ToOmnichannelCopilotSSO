@@ -12,13 +12,12 @@ Note left of Chat Widget: 1. Client side Okta <br/>Authentication widget <br/>.
 Chat Widget -->> Okta: 2. Send authentication challenge.
 Okta-->> Chat Widget: 3. Return access token.
 Chat Widget -->> Copilot Studio: 4. Send access token.
-Note left of Copilot Studio: 5. Validates token by<br/> retrospection end point, <br/>.
-Copilot Studio -->> Chat Widget: 6. Return auth confirmation.
-Note left of Chat Widget: 7. Sign token <br/>with private key. <br/>.
-Chat Widget -->> D365 Omnichannel: 8. Send signed access token.
-Note right of D365 Omnichannel: 7. Validates token <br/>with public key. <br/>.
-D365 Omnichannel -->> Chat Widget : Return auth confirmation.
-
+Note right of Copilot Studio: 5. [OPTIONAL] Validate token using <br/>retrospection endpoint. <br/>.
+Copilot Studio -->> 3rd Party Systems: 6. Access token authenticates users.
+Note left of Chat Widget: 7. Sign JWT token <br/>with private key. <br/>.
+Chat Widget -->> D365 Omnichannel: 8. Send signed JWT token.
+Note right of D365 Omnichannel: 9. Validates JWT token <br/>with public key. <br/>.
+D365 Omnichannel -->> Chat Widget: 10. Return auth confirmation.
 ```
 ## Getting started
 
@@ -37,42 +36,74 @@ To run this sample app with end-to-end SSO flow with OKTA, you will need to:
 
 ### 1. Deploy sample app to Azure:
 
- 1. Navigate to your project directory.
+1. Navigate to your project directory.
  
      `cd <your-project-folder>` 
  
- 2. Initialize the local Git repository using the command.
+2. Open the project director in VS Code. 
 
-	`git clone <repository_url>`
+	<p  align="center">
+	<img  src="images/1-OpenFolder.png"  alt="Open the project director in VS Code."  width="800px">
+	<br>
+	</p> 
  
- 3. Log in to Azure CLI. The steps assumes and active subscription and resource group `<myResourceGroup>`.
+3. In Command Bar, select `Show and Run Commands`. 
 
-	`az login` 
+	<p  align="center">
+	<img  src="images/2-ShowRunCommand.png"  alt="In Command Bar, select `Show and Run Commands`."  width="800px">
+	<br>
+	</p> 
  
- 4. Deploy the sample app to Azure using Azure CLI commands. 
-	- Create a App Service Plan in Azure:
+4. In Command Bar, select `AppCenter > Create New App`. 
+
+	<p  align="center">
+	<img  src="images/3-CreateNewApp.png"  alt="In Command Bar, select `AppCenter > Create New App`."  width="800px">
+	<br>
+	</p> 
 	
-		`az appservice plan create --name <myAppServicePlan> --resource-group <myResourceGroup> --sku <sku> --location <location>` 
+5. In Command Bar, enter the name of app and clict Enter. 
 
-	> **Example:** az appservice plan create --name myAppServicePlan --resource-group myResourceGroup --sku P0v3 --location "West US"
+	<p  align="center">
+	<img  src="images/3-SelectName.png"  alt="In Command Bar, enter the name of app and clict Enter."  width="800px">
+	<br>
+	</p> 	
 
-	- Create a Web App. Use the App Service Plan created in the previous step in the --name parameter:
+6. In Command Bar, select location of the app resource. 
+
+	<p  align="center">
+	<img  src="images/4-SelectLocation.png"  alt="In Command Bar, select location of the app resource."  width="800px">
+	<br>
+	</p> 	
 	
-		 `az webapp create --name <myWebapp> --resource-group <myResourceGroup> --plan <myAppServicePlan>
-` 
+7. In Command Bar, select `Node 22 LTS` as runtime stack. 
 
-	> **Example:**  az webapp create --name  myWebapp --resource-group  myResourceGroup --plan  myAppServicePlan
+	<p  align="center">
+	<img  src="images/5-SelectRuntime.png"  alt="In Command Bar, select `Node 22 LTS` as runtime stack."  width="800px">
+	<br>
+	</p> 	
 
-	- Deploy code from repository. Use the Web App name created in the previous step in the --name parameter  		
+8. In Command Bar, select pricing tier and click enter.
+
+	<p  align="center">
+	<img  src="images/6-SelectPricing.png"  alt="In Command Bar, select pricing tier."  width="800px">
+	<br>
+	</p> 
 	
-		` az webapp deployment source config --name <myWebapp> --resource-group <myResourceGroup> --repo-url <repository_url> --branch master --manual-integration`
+8. Confirm successful app creation.
 
-	> **Example:** az webapp deployment source config --name myWebapp --resource-group myResourceGroup --repo-url <repository_url> --branch master --manual-integration
+	<p  align="center">
+	<img  src="images/7-ConfirmSuccess.png"  alt="Confirm successful app creation."  width="800px">
+	<br>
+	</p> 	
+	
+ 9. Login into [Azure Portal](https://portal.azure.com/). Search for app created in the previous step and go to **Overview** page. 
 
+ 10. Verify **Status = Running** on the **Overview** page. Copy the `Default domain` from the detail page. 
  
-8. Login into [Azure Portal](https://portal.azure.com/). Search for app created in the previous step and go to **Overview** page. 
-
-9. Verify **Status = Running** on the **Overview** page. Copy the `Default domain` from the detail page. 
+ <p  align="center">
+ 	<img  src="images/8-DefaultDomain.png"  alt="Copy the `Default domain` from the detail page."  width="800px">
+ 	<br>
+	</p> 	
 
 ### 2. Create an OKTA developer account:
 1. Sign up for an [OKTA developer account](https://developer.okta.com/signup/)
@@ -113,9 +144,10 @@ To run this sample app with end-to-end SSO flow with OKTA, you will need to:
 > This section assumes that [Copilot handoff to Dynamics 365 Customer Service](https://learn.microsoft.com/en-us/microsoft-copilot-studio/configuration-hand-off-omnichannel?tabs=webApp) is configured.
 
 #### Public Key / Private Key Setup:
-> <em> This sample app comes with pre configured public/private keys. This step is optional if self generated keys are not required. </em>
+ > [!NOTE] 
+ > **OPTIONAL** - This sample app comes with pre configured public/private keys. This step is optional if self generated keys are not required. 
 
-1. Install [Git Bash](https://www.atlassian.com/git/tutorials/git-bash) on your machine.
+ 1. Install [Git Bash](https://www.atlassian.com/git/tutorials/git-bash) on your machine.
  
  2. Generate a private key by running the command on git bash. 
  
@@ -129,7 +161,7 @@ To run this sample app with end-to-end SSO flow with OKTA, you will need to:
  
 	 `openssl rsa -pubout -in private_key.pem -out public_key.pem`
 	 
-6. Rename the file `public.key` and save the file in `/keys` project folder. 
+ 6. Rename the file `public.key` and save the file in `/keys` project folder. 
 
 #### D365 Omnichannel:
 
@@ -177,10 +209,9 @@ To run this sample app with end-to-end SSO flow with OKTA, you will need to:
  
  ##### Use pass-through pattern. 
   > [!TIP] 
-  > In this pattern, only the token and not the Idp payload (typically includes information about the authenticated user, such as their identity, attributes etc.) is sent to Copilot Studio. 
+  > In this pattern, only the token and not the JWT payload (typically includes information about the authenticated user, such as their identity, attributes etc.) is sent to Copilot Studio. 
   > In addition, the token is **not** validated by Copilot till it is used e.g.to cal an API. 
   > Authentication flow works as long as Copilot Studio receives the token. 
-  > Steps [5], [6] are to be followed **only** when implementing pass-through pattern pattern.
  
  5. Copy YAML code from `/copilot/SingIn - Pass Through Pattern Flow.YAML` file and paste in the code editor. Save topic.
  
@@ -188,13 +219,12 @@ To run this sample app with end-to-end SSO flow with OKTA, you will need to:
  
  ##### Use introspection API. 
  > [!NOTE] 
- > OPTIONAL
+ > **OPTIONAL** - Steps [7], [8], [9] are to be followed **only** when implementing introspection API pattern.
  
  > [!TIP] 
- > In this pattern, the token is sent to Copilot Studio. The Copilot Studio calls the Idp instrspection API to validate the token and get the Idp payload (typically includes information about 
+ > In this pattern, the token is sent to Copilot Studio. The Copilot Studio calls the Idp instrspection API to validate the token and get the JWT payload (typically includes information about 
  > the authenticated user, such as their identity, attributes etc.). 
  > The authentication flow validates the token at the time of SSO. 
- > Steps [7], [8], [9] are to be followed **only** when implementing introspection API pattern.
  
  7. Copy YAML code from `/copilot/SingIn - Introspection Flow.YAML` file and paste in the code editor.
  
@@ -234,68 +264,77 @@ To run this sample app with end-to-end SSO flow with OKTA, you will need to:
 1. Navigate to your project directory.
  
      `cd <your-project-folder>` 
-     
-2. Source the project to local git.
+ 
+2. Open the project director in VS Code. 
 
-	` az webapp deployment source config-local-git --name <myWebapp>  --resource-group <myResourceGroup>`
+	<p  align="center">
+	<img  src="images/1-OpenFolder.png"  alt="Open the project director in VS Code."  width="600px">
+	<br>
+	</p> 
       
-4. Create a zip file for deployment.
+4. Click `Deploy to web app`.
 
-	` Compress-Archive -Path * -DestinationPath deployment\deployment.zip`
-
-5. Confirm that file `deployment.zip` is created in the `/deployment` folder.
-
-6. Redeploy sample app to Azure.
-
-	` az webapp deployment source config-zip --resource-group <myResourceGroup> --name <myWebapp> --src deployment\deployment.zip`
+	<p  align="center">
+		<img  src="images/9-Deploy.png"  alt="Click `Deploy to web app`."  width="600px">
+		<br>
+	</p> 
   
 ### Test the SSO flow:
 
 Follow the demo steps below to test SSO flow - 
 
-Step 1: <em> Go to `https://[Default domain]`. . Log in using Okta Credentials. </em>
+Step 1: 
+
+Step 1: <em> Note the Okta **username** of the test user. </em>
+
+<p  align="center">
+<img  src="images/OktaUserName.png"  alt="Go to `https://[Default domain]`"  width="800px">
+<br>
+</p>
+
+Step 2: <em> Go to `https://[Default domain]`. Log in using Okta Credentials as test user. </em>
 
 <p  align="center">
 <img  src="images/Step1GotoToLogin.png"  alt="Go to `https://[Default domain]`"  width="800px">
 <br>
 </p>
 
-Step 2: <em> Verify login. Logout button would be visible.</em>
+Step 3: <em> Verify login. Logout button would be visible.</em>
 
 <p  align="center">
 <img  src="images/Step2SignedIn.png"  alt="Verify login. Logout button would be visible."  width="800px">
 <br>
 </p>
 
-Step 3: <em> Once logged in; click on the chat widget top open. </em>
+Step 4: <em> Once logged in; click on the chat widget top open. </em>
 
 <p  align="center">
 <img  src="images/Step3OpenChatWidget.png"  alt="Once logged in; click on the chat widget top open."  width="800px">
 <br>
 </p> 
 
-Step 4: <em> Agent displays Okta identification message with username.  This step confirm Copilot Studio authentication. </em>
+Step 5: <em> Agent displays Okta identification message with **username** of the test user. This step confirm Copilot Studio authentication. </em>
 
 <p  align="center">
 <img  src="images/Step4LoggedIn.png"  alt="Agent displays Okta identification message with username.  This step confirm Copilot Studio authentication."  width="800px">
 <br>
 </p>
 
-Step 5: <em> Type `Escalate` in chat window to transfer chat to D365 Omnichannel. </em>
+Step 6: <em> Type `i want to talk to an agent` in chat window to transfer chat to D365 Omnichannel. </em>
 
 <p  align="center">
 <img  src="images/Step5Escalate.png"  alt="Type `Escalate` in chat window to transfer chat to D365 Omnichannel. "  width="800px">
 <br>
 </p>
 
-Step 6: <em> Open Omnichannel for Customer Service console in D365 Service. A chat equest notification pops with username.  This step confirm D365 Omnichannel authentication.  </em>
+Step 7: <em> Open Omnichannel for Customer Service console in D365 Service. A chat equest notification pops with **username** of the test user.  This step confirm D365 Omnichannel authentication.  </em>
 
 <p  align="center">
-<img  src="images/Step7Escalate.png"  alt="Open Omnichannel for Customer Service console in D365 Service. A chat equest notification pops with username.  This step confirm D365 Omnichannel authentication.  "  width="800px">
+<img  src="images/Step7Escalate.png"  alt="Open Omnichannel for Customer Service console in D365 Service. A chat equest notification pops with username. This step confirm D365 Omnichannel authentication.  "  width="800px">
 <br>
 </p>
 
-Step 7: <em> Click on accept button. Chat window opens up with Okta username for Copilot & D365 Omnichannel. </em>
+Step 8: <em> Click on accept button. Chat window opens up with Okta username for Copilot & D365 Omnichannel. </em>
 
 <p  align="center">
 <img  src="images/Step8Final.png"  alt="Click on accept button. Chat window opens up with Okta username for Copilot & D365 Omnichannel."  width="800px">
